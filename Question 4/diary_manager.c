@@ -5,11 +5,12 @@
 
 #define MAX_ENTRIES 100
 #define MAX_LEN 1024
-#define PASSWORD "pass123"
+// #define PASSWORD "pass123" // Remove hardcoded password
 
 // "In-memory" storage as requested by the prompt
 char diary_storage[MAX_ENTRIES][MAX_LEN];
 int entry_count = 0;
+char current_password[100] = {0}; // To store the password dynamically
 
 // Function pointers for our dynamically loaded functions
 void (*encrypt_func)(char *);
@@ -50,11 +51,34 @@ int verify_user() {
     fgets(input, 100, stdin);
     input[strcspn(input, "\n")] = 0; // Remove trailing newline
 
-    if (strcmp(input, PASSWORD) == 0) {
+    if (strcmp(input, current_password) == 0) {
         return 1; // Success
     } else {
         printf("Access Denied.\n");
         return 0; // Failure
+    }
+}
+
+void set_password() {
+    printf("Set your new diary password: ");
+    fgets(current_password, sizeof(current_password), stdin);
+    current_password[strcspn(current_password, "\n")] = 0; // Remove trailing newline
+    printf("Password set successfully.\n");
+}
+
+void update_password() {
+    char old_input[100];
+    printf("Enter old password to update: ");
+    fgets(old_input, 100, stdin);
+    old_input[strcspn(old_input, "\n")] = 0;
+
+    if (strcmp(old_input, current_password) == 0) {
+        printf("Enter new password: ");
+        fgets(current_password, sizeof(current_password), stdin);
+        current_password[strcspn(current_password, "\n")] = 0;
+        printf("Password updated successfully.\n");
+    } else {
+        printf("Old password incorrect. Password not updated.\n");
     }
 }
 
@@ -106,11 +130,13 @@ int main() {
     }
 
     int choice = 0;
-    while (choice != 3) {
+    while (choice != 5) {
         printf("\nDiary Manager\n");
         printf("1. Add new entry (encrypts and stores)\n");
         printf("2. View all entries (decrypts for console)\n");
-        printf("3. Exit\n");
+        printf("3. Set Password\n");
+        printf("4. Update Password\n");
+        printf("5. Exit\n");
         printf("Choice: ");
 
         char input[10];
@@ -125,6 +151,12 @@ int main() {
                 view_entries();
                 break;
             case 3:
+                set_password();
+                break;
+            case 4:
+                update_password();
+                break;
+            case 5:
                 printf("Exiting.\n");
                 break;
             default:

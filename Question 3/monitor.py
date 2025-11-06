@@ -1,6 +1,7 @@
 import time
 import matplotlib.pyplot as plt
 import sensormodule  # Import our compiled C module
+import sys
 
 # --- Setup Real-time Plot ---
 plt.ion() # Turn on interactive mode
